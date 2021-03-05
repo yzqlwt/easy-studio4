@@ -43,6 +43,7 @@ import { send } from '../../middleware/websocket';
 import { tinypng } from '../../common/tinypng';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { getAddonPath } from '../../common/global';
+import { addWatcher } from '../../common/watcher';
 
 const addon = window.require(getAddonPath());
 
@@ -139,6 +140,9 @@ class Index extends React.Component {
         addon.setSkinPath("res/ui/games/game207/skin01")
         addon.setCCSPath("C:\\Users\\yzqlwt\\Documents\\WorkSpace\\cocos-ui-back\\mangomath-ui\\CocosProject.ccs")
         console.error(addon.getSkinFullPath())
+        let watcher = addWatcher("C:\\Users\\yzqlwt\\Documents\\test");
+        watcher.close();
+        console.log(watcher.getWatched())
     }
 
     getSkinsData() {

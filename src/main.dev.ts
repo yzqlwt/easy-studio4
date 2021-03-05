@@ -12,7 +12,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
 import { dialog } from 'electron';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, globalShortcut } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';

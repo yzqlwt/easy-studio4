@@ -3,6 +3,7 @@ import {
     Menu,
     shell,
     BrowserWindow,
+    dialog,
     MenuItemConstructorOptions,
 } from 'electron';
 
@@ -242,14 +243,28 @@ export default class MenuBuilder {
                 ]
             },
             {
-                label: 'Setting',
+                label: '&Setting',
                 submenu: [
                     {
                         label: 'CCS路径设置',
                         click: (e) => {
                             this.mainWindow.webContents.send("setting", 'ccs');
                         },
+                    },
+                    {
+                        label: '粘贴',
+                        accelerator: 'F2',
+                        click: () => {
+                            this.mainWindow.webContents.send("c-v");
+                            dialog.showMessageBox({
+                                type: 'info',
+                                title: 'c-v',
+                                message:'mm',
+                                buttons: ['嗯, 我不会关闭的'],
+                              })
+                         }
                     }
+
                 ],
             },
         ];

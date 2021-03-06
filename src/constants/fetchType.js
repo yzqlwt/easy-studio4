@@ -5,19 +5,19 @@ export const DEFAULT_MANAGE_PREFIX = 'MANAGE';
 export const DEFAULT_SINGLE_PREFIX = 'SINGLE';
 
 export const PROPERTY = {
-    MANAGE: 'manage',
-    MANAGE_SUCCESS: 'manage success',
-    MANAGE_FAIL: 'manage fail',
+  MANAGE: 'manage',
+  MANAGE_SUCCESS: 'manage success',
+  MANAGE_FAIL: 'manage fail',
 };
 
 export const ACTIVITY = {
-    MANAGE: 'activity manage',
-    MANAGE_SUCCESS: 'activity manage success',
-    MANAGE_FAIL: 'activity manage fail',
+  MANAGE: 'activity manage',
+  MANAGE_SUCCESS: 'activity manage success',
+  MANAGE_FAIL: 'activity manage fail',
 };
 
 export const SKIN = {
-    MANAGE: 'manage',
-    MANAGE_SUCCESS: 'manage success',
-    MANAGE_FAIL: 'manage fail',
+  MANAGE: 'manage',
+  MANAGE_SUCCESS: 'manage success',
+  MANAGE_FAIL: 'manage fail',
 };

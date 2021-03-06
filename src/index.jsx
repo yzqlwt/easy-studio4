@@ -11,14 +11,14 @@ import configureStore from './store/configureStore';
 
 const store = configureStore();
 render(
-    <Provider store={store}>
-        <Router>
-            <Switch>
-                <Route exact path="/" component={FileViewRoute} />
-            </Switch>
-        </Router>
-    </Provider>,
-    document.getElementById('root')
+  <Provider store={store}>
+    <Router>
+      <Switch>
+        <Route exact path="/" component={FileViewRoute} />
+      </Switch>
+    </Router>
+  </Provider>,
+  document.getElementById('root')
 );
 
 // <Route exact path="/login" component={LoginRoute} />

@@ -8,121 +8,119 @@ import { getAddonPath, getIconPath } from '../../common/global';
 import { addWatcher } from '../../common/watcher';
 const addon = window.require(getAddonPath());
 const fs = window.require('fs');
-
 class Index extends React.Component {
-    state = {
-        path: '',
-        data: [],
-    };
+  state = {
+    data: [],
+  };
 
-    getData() {
-        const path = this.state.path;
-        if (path === '') return [];
-        const list = addon.getFolder(path).split(',');
-        console.log(list);
-        let data = map(list, (elem) => {
-            const isFile = fs.lstatSync(path + '/' + elem).isFile();
-            return {
-                title: elem,
-                path: path + '/' + elem,
-                icon: isFile
-                    ? getIconPath('file.png')
-                    : getIconPath('folder.png'),
-                isFile: isFile,
-            };
-        });
-        return data;
-    }
+  getData() {
+    const {folder, dataFiles} = this.props
+    const path = dataFiles[folder+"Path"];
+    console.log(path, folder+"Path", this.props)
+    if (!fs.existsSync(path)) return [];
+    const list = addon.getFolder(path).split(',');
+    let data = map(list, (elem) => {
+      const isFile = fs.lstatSync(path + '/' + elem).isFile();
+      return {
+        title: elem,
+        path: path + '/' + elem,
+        icon: isFile ? getIconPath('file.png') : getIconPath('folder.png'),
+        isFile: isFile,
+      };
+    });
+    return data;
+  }
 
-    componentDidMount() {
-        let path = this.props.path;
-        path = path ? path : 'C:/Users/yzqlwt/Desktop/Resource';
-        this.setState({
-            path: path,
-        });
-        const ipcRenderer = global.require('electron').ipcRenderer;
-        ipcRenderer.on('c-v', (type) => {
-            console.log('setting');
-        });
+  componentDidMount() {
+    const path = this.props.path;
+    this.setState({
+      path: path,
+    });
+  }
 
-    }
-    onKeyDown = function(){
-        if (!this.props.disable){
-            console.log('按下', this.state.path, this);
-        }
-    };
+  componentWillReceiveProps(nextProps){
+    const { dataFiles, dispatch } = nextProps;
+    const { folder } = dataFiles;
+  }
 
-    render() {
-        const data = this.getData();
-        return (
-            <div style={{ height: '100%' }}>
-                <ReactCustomScrollBars
-                    autoHide
-                    autoHideTimeout={600}
-                    autoHideDuration={400}
+  handleChange = (path) => {
+    const {dispatch, folder} = this.props;
+    dispatch({
+      type: folder+"Path",
+      path: path
+    })
+  }
+
+  render() {
+    console.error("render", this.props.folder)
+    const data = this.getData();
+    return (
+      <div style={{ height: '100%' }}>
+        <ReactCustomScrollBars
+          autoHide
+          autoHideTimeout={600}
+          autoHideDuration={400}
+        >
+          <List
+            grid={{
+              gutter: 10,
+              xs: 3,
+              sm: 4,
+              md: 8,
+              lg: 8,
+              xl: 12,
+              xxl: 14,
+            }}
+            dataSource={data}
+            renderItem={(item) => (
+              <List.Item>
+                <Card
+                  bodyStyle={{ padding: '2px 3px 0px' }}
+                  hoverable
+                  onClick={() => {
+                    const isFile = item.isFile;
+                    if (!isFile) {
+                      this.handleChange(item.path);
+                    }
+                  }}
                 >
-                    <List
-                        grid={{
-                            gutter: 10,
-                            xs: 1,
-                            sm: 2,
-                            md: 8,
-                            lg: 8,
-                            xl: 12,
-                            xxl: 14,
+                  <Col style={{ width: '100%' }}>
+                    <Row align="center">
+                      <img
+                        src={item.icon}
+                        alt={item.path}
+                        style={{
+                          height: 60,
+                          width: 'auto',
+                          maxWidth: '99%',
                         }}
-                        dataSource={data}
-                        renderItem={(item) => (
-                            <List.Item>
-                                <Card
-                                    bodyStyle={{ padding: '2px 3px 0px' }}
-                                    hoverable
-                                    onClick={() => {
-                                        const isFile = item.isFile;
-                                        if (!isFile) {
-                                            this.setState({
-                                                path: item.path,
-                                            });
-                                        }
-                                    }}
-                                >
-                                    <Col style={{ width: '100%' }}>
-                                        <Row align="center">
-                                            <img
-                                                src={item.icon}
-                                                alt={item.path}
-                                                style={{
-                                                    height: 60,
-                                                    width: 'auto',
-                                                    maxWidth: '99%',
-                                                }}
-                                            />
-                                        </Row>
-                                        <Row align="center">
-                                            <b
-                                                style={{
-                                                    wordBreak: 'break-all',
-                                                    width: '100%',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                {item.title}
-                                            </b>
-                                        </Row>
-                                    </Col>
-                                </Card>
-                            </List.Item>
-                        )}
-                    />
-                </ReactCustomScrollBars>
-            </div>
-
-        );
-    }
+                      />
+                    </Row>
+                    <Row align="center">
+                      <b
+                        style={{
+                          wordBreak: 'break-all',
+                          width: '100%',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {item.title}
+                      </b>
+                    </Row>
+                  </Col>
+                </Card>
+              </List.Item>
+            )}
+          />
+        </ReactCustomScrollBars>
+      </div>
+    );
+  }
 }
 
-function stateToProps() {
-    return {};
+function stateToProps(state) {
+  const { dataFiles } = state;
+  return { dataFiles };
 }
 
 export default connect(stateToProps)(Index);

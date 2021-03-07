@@ -124,6 +124,7 @@ const auth = {
 
   isValidToken() {
     const token = this.deSerializeToken();
+    console.log(token)
     if (!token) {
       return -1;
     }

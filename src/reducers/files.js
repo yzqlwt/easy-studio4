@@ -16,3 +16,16 @@ export const dataFiles = function (state = {}, action = {}) {
         return state;
   }
 };
+
+export const curViewPath = function(state = {}, action={}){
+  switch (action.type){
+    case "curViewPath":
+      return Object.assign({}, state, {
+        skinPath: action.skinPath,
+        assetsPath: action.assetsPath,
+      });
+    default:
+      return state;
+  }
+}
+

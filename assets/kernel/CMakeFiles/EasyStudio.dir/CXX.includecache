@@ -4,7 +4,7 @@
 
 #IncludeRegexComplain: ^$
 
-#IncludeRegexTransform: 
+#IncludeRegexTransform:
 
 C:/Users/yzqlwt/Documents/EasyStudio/kernel/main.cpp
 iostream

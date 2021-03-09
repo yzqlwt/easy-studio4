@@ -6,5 +6,5 @@ CXX_FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD   /utf-8 -std:c++
 
 CXX_DEFINES = -DJSON_USE_IMPLICIT_CONVERSIONS=1 -D_CRT_SECURE_NO_WARNINGS
 
-CXX_INCLUDES = -IC:\Users\yzqlwt\vcpkg\installed\x86-windows\include 
+CXX_INCLUDES = -IC:\Users\yzqlwt\vcpkg\installed\x86-windows\include
 

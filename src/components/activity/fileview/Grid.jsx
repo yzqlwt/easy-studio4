@@ -101,18 +101,22 @@ class Index extends React.Component {
   };
 
   handleChangePath = (path) => {
-    const { dispatch, folder } = this.props;
+    const { dispatch, folder, curViewPath } = this.props;
+    let pathState = curViewPath;
+    pathState[folder + 'Path'] = path;
     dispatch({
-      type: folder + 'Path',
-      path: path
+      type: "curViewPath",
+      assetsPath: pathState.assetsPath,
+      skinPath: pathState.skinPath,
     });
   };
 
   render() {
     const data = this.getData();
+    const {folder} = this.props;
     return (
       <div className="grid">
-        <ContextMenuTrigger id="list" className="context">
+        <ContextMenuTrigger id={"list_ContextMenuTrigger"+folder} className="context">
           <ReactCustomScrollBars
             autoHide
             autoHideTimeout={600}
@@ -147,7 +151,7 @@ class Index extends React.Component {
             />
           </ReactCustomScrollBars>
         </ContextMenuTrigger>
-        <ContextMenu id="list" className="context-menu">
+        <ContextMenu id={"list_ContextMenuTrigger"+folder}  className="context-menu">
           <MenuItem  onClick={() => {
             const { folder } = this.props;
             const { curViewPath } = this.props;

@@ -87,6 +87,12 @@ class Index extends React.Component {
                 this.setState({
                   activeFolder: key
                 })
+                const { dispatch } = this.props;
+                dispatch({
+                  type: 'curViewPath',
+                  skinPath: addon.getSkinFullPath(),
+                  assetsPath: addon.getAssetsFullPath(),
+                });
               }}
               activeKey={this.state.activeFolder}
             >

@@ -4,7 +4,7 @@
 # compile CXX with C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.26.28801/bin/Hostx86/x86/cl.exe
 CXX_FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD   /utf-8 -fexceptions -std:c++latest
 
-CXX_DEFINES = 
+CXX_DEFINES =
 
-CXX_INCLUDES = -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize\CsdSerialize -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize\flatbuffers\.. -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize\flatbuffers\. 
+CXX_INCLUDES = -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize\CsdSerialize -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize\flatbuffers\.. -IC:\Users\yzqlwt\Documents\EasyStudio\kernel\CsdSerialize\flatbuffers\.
 

@@ -17,7 +17,7 @@ class Index extends React.Component {
       <Layout className="left">
         <Layout.Sider
           theme="light"
-          width={300}
+          width={320}
           className="sider"
         >
           <Templates></Templates>

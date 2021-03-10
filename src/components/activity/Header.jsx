@@ -1,22 +1,19 @@
 import React from 'react';
-import {
-  Menu,
-  PageHeader,
-  Button,
-  Descriptions,
-  Dropdown
-} from 'antd';
+import { Menu, PageHeader, Button, Descriptions, Dropdown } from 'antd';
 import { get, last, find } from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchProperty } from '../../actions/property';
 import { EllipsisOutlined } from '@ant-design/icons';
 import './index.scss';
+import { getAddonPath } from '../../common/global';
+import { EventEmitter } from 'events';
+const addon = window.require(getAddonPath());
+const emitter = new EventEmitter();
+
 
 
 class Index extends React.Component {
-
-
   fetchProperties = (skinId) => {
     const { dispatch } = this.props;
     dispatch(fetchProperty({ itemId: skinId, itemType: 'Skin' }));
@@ -29,6 +26,11 @@ class Index extends React.Component {
     if (skinId != oldData.skinId) {
       this.fetchProperties(skinId);
     }
+  }
+  componentDidMount(){
+    emitter.on('tiny', (data) => {
+      console.log(data, "tiny");
+    });
   }
 
   getSkinData() {
@@ -44,7 +46,10 @@ class Index extends React.Component {
 
   getPath() {
     const { dataProperty } = this.props;
-    const property = find(get(dataProperty, 'response', []), (property) => property.name == 'path');
+    const property = find(
+      get(dataProperty, 'response', []),
+      (property) => property.name == 'path'
+    );
     if (property) {
       return property.content;
     }
@@ -61,9 +66,12 @@ class Index extends React.Component {
       >
         从后台导入
       </Menu.Item>
-      <Menu.Item key="cache" onClick={() => {
-        console.log('click 客户端缓存');
-      }}>
+      <Menu.Item
+        key="cache"
+        onClick={() => {
+          console.log('click 客户端缓存');
+        }}
+      >
         客户端缓存
       </Menu.Item>
     </Menu>
@@ -71,8 +79,8 @@ class Index extends React.Component {
 
   renderHeader() {
     const data = this.getSkinData();
-    return (
-      data ? <PageHeader
+    return data ? (
+      <PageHeader
         ghost={false}
         title={data.name || 'undefined'}
         subTitle=""
@@ -82,6 +90,7 @@ class Index extends React.Component {
             type="primary"
             onClick={() => {
               console.log('click images');
+              addon.package(emitter.emit.bind(emitter));
             }}
           >
             打包&上传
@@ -90,17 +99,17 @@ class Index extends React.Component {
             <Button
               style={{
                 border: 'none',
-                padding: 0
+                padding: 0,
               }}
             >
               <EllipsisOutlined
                 style={{
                   fontSize: 20,
-                  verticalAlign: 'top'
+                  verticalAlign: 'top',
                 }}
               />
             </Button>
-          </Dropdown>
+          </Dropdown>,
         ]}
         style={{ margin: 0 }}
       >
@@ -109,14 +118,14 @@ class Index extends React.Component {
             {this.getPath()}
           </Descriptions.Item>
         </Descriptions>
-      </PageHeader> : <div></div>
+      </PageHeader>
+    ) : (
+      <div></div>
     );
   }
 
   render() {
-    return (
-      this.renderHeader()
-    );
+    return this.renderHeader();
   }
 }
 
@@ -126,7 +135,7 @@ Index.propTypes = {
 
 function stateToProps(state) {
   const { dataSkin, dataProperty, dataTemplateSkinId } = state;
-  return {dataSkin, dataProperty, dataTemplateSkinId };
+  return { dataSkin, dataProperty, dataTemplateSkinId };
 }
 
 export default connect(stateToProps)(Index);

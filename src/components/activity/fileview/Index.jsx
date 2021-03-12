@@ -44,6 +44,7 @@ class Index extends React.Component {
 
   componentDidMount() {
     addon.setCCSPath("C:\\Users\\yzqlwt\\Documents\\WorkSpace\\cocos-ui\\mangomath-ui\\CocosProject.ccs");
+    addon.setTPPath("C:/Users/yzqlwt/easy-studio-addon/build/Release/assets/TexturePacker.exe")
   }
 
   getPathProperty(dataProperty){

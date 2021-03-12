@@ -1,17 +1,45 @@
-export const dataFiles = function (state = {}, action = {}) {
+const initState = {
+  tinyData:{
+    status: "wait",
+    title: "compress",
+  },
+  packageData:{
+    status: "wait",
+    title: "compress",
+  },
+  uploadData:{
+    status: "wait",
+    title: "compress",
+  },
+  visible:false
+}
+export const dataSteps = function (state = initState, action = {}) {
   switch (action.type){
-    case "folder":
+    case "tiny":
       return Object.assign({}, state, {
-        folder: action.folder
-      });
-    case "imagesPath":
+        ["tinyData"]: Object.assign({}, state["tiny"], {
+          status: action.status,
+          title: action.title,
+        })});
+    case "package":
       return Object.assign({}, state, {
-        imagesPath: action.path
-      });
-    case "othersPath":
+        ["packageData"]: Object.assign({}, state["tiny"], {
+          status: action.status,
+          title: action.title,
+        })});
+    case "upload":
       return Object.assign({}, state, {
-        othersPath: action.path
-      });
+        ["uploadData"]: Object.assign({}, state["tiny"], {
+          status: action.status,
+          title: action.title,
+        })});
+    case "visible":
+      const visible = action.title == "true";
+      return Object.assign({}, state, {
+        ["visible"]: visible,
+        ["uploadData"]: Object.assign({}, state["tiny"], initState.uploadData),
+        ["packageData"]: Object.assign({}, state["tiny"], initState.uploadData),
+        ["tinyData"]: Object.assign({}, state["tiny"], initState.uploadData)})
     default:
         return state;
   }

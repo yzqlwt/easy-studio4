@@ -24,58 +24,9 @@ class StepsView extends React.Component {
     });
   };
 
-  onClose = () => {
-    this.setState({
-      visible: false,
-    });
-  };
-
-  onChange = (e) => {
-    this.setState({
-      placement: e.target.value,
-    });
-  };
-
-  getSteps = () => {};
-
-  componentWillReceiveProps(nextProps) {
-    const { dataWebsocket } = nextProps;
-    const { visible } = this.state;
-    const steps = get(dataWebsocket, ['steps', 'steps'], []);
-    const current = get(dataWebsocket, 'steps.current', []);
-    if (steps.length == 0) {
-      return;
-    }
-    const lastStep = last(steps);
-    if (visible != (lastStep !== current)) {
-      this.setState({
-        visible: lastStep !== current,
-      });
-    }
-    if (lastStep !== current) {
-      const curIndex = indexOf(steps, current);
-      const tmp = steps.map((step, index) => {
-        let status = 'wait';
-        if (index < curIndex) {
-          status = 'finish';
-        } else if (index == curIndex) {
-          status = 'process';
-        }
-        return {
-          text: step,
-          status: status,
-        };
-      });
-      this.setState({
-        steps: tmp,
-      });
-      console.log(tmp, curIndex);
-    }
-  }
-
   render() {
-    const { visible, steps } = this.state;
-    console.log(steps, 'STEPS');
+    const { dataSteps } = this.props;
+    const { tinyData, packageData, uploadData, visible } = dataSteps;
     return (
       <Drawer
         title="Wait a minute"
@@ -85,19 +36,16 @@ class StepsView extends React.Component {
         key="Drawer"
       >
         <Steps>
-          {map(steps, (step) => {
-            return <Step status={step.status} title={step.text} />;
-          })}
+          <Step status={tinyData.status } title={tinyData.title}  />
+          <Step status={packageData.status} title={packageData.title}  />
+          <Step status={uploadData.status} title={uploadData.title}  />
         </Steps>
       </Drawer>
     );
   }
 }
 
-// <Step status="finish" title="Login" icon={<UserOutlined />} />
-// <Step status="finish" title="Verification" icon={<SolutionOutlined />} />
-// <Step status="process" title="Pay" icon={<LoadingOutlined />} />
-// <Step status="wait" title="Done" icon={<SmileOutlined />} />
+
 
 StepsView.propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -106,8 +54,8 @@ StepsView.propTypes = {
 };
 
 function stateToProps(state) {
-  const { dataWebsocket } = state;
-  return { dataWebsocket };
+  const { dataSteps } = state;
+  return { dataSteps };
 }
 
 export default connect(stateToProps)(StepsView);

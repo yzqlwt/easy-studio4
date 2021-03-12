@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Menu,
-  Spin,
-  Pagination,
-  Tooltip
-} from 'antd';
+import { Menu, Spin, Pagination, Tooltip } from 'antd';
 import { get, last } from 'lodash';
 import ReactCustomScrollBars from 'react-custom-scrollbars';
 import PropTypes from 'prop-types';
@@ -16,16 +11,15 @@ import {
   isFetchLoading,
   startToPage,
   pageToStart,
-  getAbsoluteStaticUrl
+  getAbsoluteStaticUrl,
 } from '../../common/library';
 import './index.scss';
-
 
 class Index extends React.Component {
   state = {
     params: {
-      count: 12
-    }
+      count: 12,
+    },
   };
 
   fetchActivity = () => {
@@ -38,7 +32,7 @@ class Index extends React.Component {
     dispatch(
       fetchSkin({
         templateId: templateId,
-        templateType: 'ActivityTemplate'
+        templateType: 'ActivityTemplate',
       })
     );
   };
@@ -48,12 +42,12 @@ class Index extends React.Component {
     const { dispatch } = this.props;
     params.start = pageToStart(page, params.count);
     this.setState({
-      params
+      params,
     });
     dispatch({
       type: 'template-skin-id',
       templateId: null,
-      skinId: null
+      skinId: null,
     });
     this.fetchActivity();
   };
@@ -62,7 +56,7 @@ class Index extends React.Component {
     const { params } = this.state;
     searchFields.start = 0;
     this.setState({
-      params: { ...params, ...searchFields }
+      params: { ...params, ...searchFields },
     });
     this.fetchActivity();
   };
@@ -76,14 +70,14 @@ class Index extends React.Component {
       dispatch({
         type: 'template-skin-id',
         templateId: templateId,
-        skinId: null
+        skinId: null,
       });
       this.fetchSkins(templateId);
     } else {
       dispatch({
         type: 'template-skin-id',
         templateId: null,
-        skinId: null
+        skinId: null,
       });
     }
   };
@@ -95,7 +89,7 @@ class Index extends React.Component {
     dispatch({
       type: 'template-skin-id',
       templateId: dataTemplateSkinId.templateId,
-      skinId: skinId
+      skinId: skinId,
     });
   };
 
@@ -144,7 +138,7 @@ class Index extends React.Component {
                     />
                   </Tooltip>
                 </Menu.Item>,
-                <Menu.Divider></Menu.Divider>
+                <Menu.Divider></Menu.Divider>,
               ])}
             </Menu.ItemGroup>
           </Menu.SubMenu>
@@ -162,25 +156,29 @@ class Index extends React.Component {
           autoHide
           autoHideTimeout={600}
           autoHideDuration={400}
+          style={{ height: "95%"}}
         >
           <Toolbar onSearch={this.handleSearch} />
           <Spin spinning={isFetchLoading(dataActivity)} tip="Loading...">
             {this.renderTemplates()}
           </Spin>
-          <Pagination
+        </ReactCustomScrollBars>
+        <div className="pagination-div">
+            <Pagination
             current={startToPage(response.start, response.count) || 1}
             total={response.total || 0}
             onChange={this.handlePageChange}
             simple
+
           />
-        </ReactCustomScrollBars>
+        </div>
       </div>
     );
   }
 }
 
 Index.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  dispatch: PropTypes.func.isRequired,
 };
 
 function stateToProps(state) {

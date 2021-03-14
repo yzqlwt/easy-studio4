@@ -5,17 +5,17 @@ import {
   Tabs,
 } from 'antd';
 import { isEqual, get, find, each } from 'lodash';
-import { getAddonPath } from '../../../common/global';
+import { getAddonPath, getTpPath } from '../../../common/global';
 import Grid from './Grid';
 import {
   isFetchLoading,
 } from '../../../common/library';
 import './tabs.less';
 import './index.scss';
-
+import fs from 'fs-extra';
 const addon = window.require(getAddonPath());
-const fs = window.require('fs-extra');
 const fpath = window.require('path');
+
 const { TabPane } = Tabs;
 
 class Index extends React.Component {
@@ -31,12 +31,11 @@ class Index extends React.Component {
       const property = this.getPathProperty(dataProperty);
       const oldProperty = this.getPathProperty(oldData);
       if (!isEqual(property, oldProperty)){
-          const path = property.content ? property.content : "";
-          addon.setSkinPath(path);
           dispatch({
-            type: 'curViewPath',
+            type: 'dataPaths',
             skinPath: addon.getSkinFullPath(),
             assetsPath: addon.getAssetsFullPath(),
+            outputPath: addon.getOutputFullPath(),
           });
       }
     }
@@ -44,7 +43,14 @@ class Index extends React.Component {
 
   componentDidMount() {
     addon.setCCSPath("C:\\Users\\yzqlwt\\Documents\\WorkSpace\\cocos-ui\\mangomath-ui\\CocosProject.ccs");
-    addon.setTPPath("C:/Users/yzqlwt/easy-studio-addon/build/Release/assets/TexturePacker.exe")
+    addon.setTPPath(getTpPath());
+    const { dispatch} = this.props;
+    dispatch({
+      type: 'dataPaths',
+      skinPath: addon.getSkinFullPath(),
+      assetsPath: addon.getAssetsFullPath(),
+      outputPath: addon.getOutputFullPath(),
+    });
   }
 
   getPathProperty(dataProperty){
@@ -57,9 +63,9 @@ class Index extends React.Component {
 
 
   onPaste = () => {
-    const { curViewPath } = this.props;
+    const { dataPaths } = this.props;
     const folder  = this.state.activeFolder;
-    const path = curViewPath[folder + 'Path'];
+    const path = dataPaths[folder + 'Path'];
     const files = addon.getClipboardFiles().split(',');
     each(files, (file) => {
       if (fs.existsSync(file)) {
@@ -90,9 +96,10 @@ class Index extends React.Component {
                 })
                 const { dispatch } = this.props;
                 dispatch({
-                  type: 'curViewPath',
+                  type: 'dataPaths',
                   skinPath: addon.getSkinFullPath(),
                   assetsPath: addon.getAssetsFullPath(),
+                  outputPath: addon.getOutputFullPath(),
                 });
               }}
               activeKey={this.state.activeFolder}
@@ -103,6 +110,9 @@ class Index extends React.Component {
               <TabPane tab="动画及其他" key="assets">
                 <Grid folder="assets"></Grid>
               </TabPane>
+              <TabPane tab="压缩包内文件" key="output">
+                <Grid folder="output"></Grid>
+              </TabPane>
             </Tabs>
           </Hotkeys>
         </div>
@@ -112,8 +122,8 @@ class Index extends React.Component {
 }
 
 function stateToProps(state) {
-  const { curViewPath, dataTemplateSkinId, dataProperty } = state;
-  return { curViewPath, dataProperty, dataTemplateSkinId };
+  const { dataPaths, dataTemplateSkinId, dataProperty } = state;
+  return { dataPaths, dataProperty, dataTemplateSkinId };
 }
 
 export default connect(stateToProps)(Index);

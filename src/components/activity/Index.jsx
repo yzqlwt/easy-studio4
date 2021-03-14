@@ -26,7 +26,7 @@ class Index extends React.Component {
           <Layout.Header className="header">
             <Header></Header>
           </Layout.Header>
-          <Layout.Content>
+          <Layout.Content style={{width:"100%"}}>
             <FileView></FileView>
           </Layout.Content>
         </Layout>

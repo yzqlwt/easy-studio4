@@ -5,6 +5,7 @@ import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import 'antd/dist/antd.css';
 import ActivityRoute from './components/activity/Index';
 import LoginRoute from './components/login/Index';
+import SettingRoute from './components/setting/Index';
 
 import configureStore from './store/configureStore';
 
@@ -14,6 +15,7 @@ render(
     <Router>
       <Switch>
         <Route exact path="/" component={LoginRoute} />
+        <Route exact path="/setting" component={SettingRoute} />
         <Route exact path="/activity" component={ActivityRoute} />
       </Switch>
     </Router>

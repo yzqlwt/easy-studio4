@@ -1,32 +1,27 @@
 import React from 'react';
-import { Drawer, Steps, Radio, Space } from 'antd';
-import {
-  UserOutlined,
-  SolutionOutlined,
-  LoadingOutlined,
-  SmileOutlined,
-} from '@ant-design/icons';
+import { Drawer, Steps } from 'antd';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { send } from '../../middleware/websocket';
-import { get, last, find, indexOf, map } from 'lodash';
+import { UserOutlined, SolutionOutlined, LoadingOutlined, SmileOutlined } from '@ant-design/icons';
+import { map } from 'lodash';
 
 const { Step } = Steps;
 
 class StepsView extends React.Component {
   state = {
-    visible: false,
+    visible: false
   };
 
   showDrawer = () => {
     this.setState({
-      visible: true,
+      visible: true
     });
   };
 
   render() {
-    const { dataSteps } = this.props;
-    const { tinyData, packageData, uploadData, visible } = dataSteps;
+    const { dataProcess } = this.props;
+    const { visible } = dataProcess;
+
     return (
       <Drawer
         title="Wait a minute"
@@ -36,9 +31,11 @@ class StepsView extends React.Component {
         key="Drawer"
       >
         <Steps>
-          <Step status={tinyData.status } title={tinyData.title}  />
-          <Step status={packageData.status} title={packageData.title}  />
-          <Step status={uploadData.status} title={uploadData.title}  />
+          {map(dataProcess, (data, name) => {
+            if (data.title) {
+              return (<Step status={data.status} title={data.title} key={name} icon={data.status == "process" && <LoadingOutlined />}/>);
+            }
+          })}
         </Steps>
       </Drawer>
     );
@@ -46,16 +43,13 @@ class StepsView extends React.Component {
 }
 
 
-
 StepsView.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  templateId: PropTypes.number.isRequired,
-  skinId: PropTypes.number.isRequired,
+  dispatch: PropTypes.func.isRequired
 };
 
 function stateToProps(state) {
-  const { dataSteps } = state;
-  return { dataSteps };
+  const { dataProcess } = state;
+  return { dataProcess };
 }
 
 export default connect(stateToProps)(StepsView);

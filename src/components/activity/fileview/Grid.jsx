@@ -7,9 +7,8 @@ import { map, debounce, isEmpty, filter } from 'lodash';
 import { getAddonPath, getIconPath } from '../../../common/global';
 import { addWatcher } from '../../../common/watcher';
 import './index.scss';
-
+import  fs from 'fs-extra';
 const addon = window.require(getAddonPath());
-const fs = window.require('fs-extra');
 const fpath = window.require('path');
 
 const gridConfig = {
@@ -36,9 +35,10 @@ class Index extends React.Component {
   };
 
   getData() {
-    const { folder, curViewPath } = this.props;
-    const path = curViewPath[folder + 'Path'];
+    const { folder, dataPaths } = this.props;
+    const path = dataPaths[folder + 'Path'];
     if (!fs.existsSync(path)) return [];
+    if (path.indexOf("res/ui")<0) return [];
     const strList = addon.getFolder(path);
     if (isEmpty(strList)) return [];
     let list = strList.split(',');
@@ -73,16 +73,16 @@ class Index extends React.Component {
 
   componentDidMount() {
     const { folder } = this.props;
-    const { curViewPath } = this.props;
-    const path = curViewPath[folder + 'Path'];
+    const { dataPaths } = this.props;
+    const path = dataPaths[folder + 'Path'];
     this.watcher = addWatcher(path, debounce(this.handleFilesChange, 20));
   }
 
   componentWillReceiveProps(nextProps) {
-    const { curViewPath } = nextProps;
-    const { curViewPath: oldData } = this.props;
+    const { dataPaths } = nextProps;
+    const { dataPaths: oldData } = this.props;
     const { folder } = this.props;
-    const path = curViewPath[folder + 'Path'];
+    const path = dataPaths[folder + 'Path'];
     const oldPath = oldData[folder + 'Path'];
     if (!this.watcher) {
       this.watcher = addWatcher(path, debounce(this.handleFilesChange, 20));
@@ -101,11 +101,11 @@ class Index extends React.Component {
   };
 
   handleChangePath = (path) => {
-    const { dispatch, folder, curViewPath } = this.props;
-    let pathState = curViewPath;
+    const { dispatch, folder, dataPaths } = this.props;
+    let pathState = dataPaths;
     pathState[folder + 'Path'] = path;
     dispatch({
-      type: "curViewPath",
+      type: "dataPaths",
       assetsPath: pathState.assetsPath,
       skinPath: pathState.skinPath,
     });
@@ -154,8 +154,8 @@ class Index extends React.Component {
         <ContextMenu id={"list_ContextMenuTrigger"+folder}  className="context-menu">
           <MenuItem  onClick={() => {
             const { folder } = this.props;
-            const { curViewPath } = this.props;
-            const path = curViewPath[folder + 'Path'];
+            const { dataPaths } = this.props;
+            const path = dataPaths[folder + 'Path'];
             console.log(path);
             addon.gotoFolder(path);
           }}>
@@ -175,8 +175,8 @@ class Index extends React.Component {
 }
 
 function stateToProps(state) {
-  const { curViewPath } = state;
-  return { curViewPath };
+  const { dataPaths } = state;
+  return { dataPaths };
 }
 
 export default connect(stateToProps)(Index);

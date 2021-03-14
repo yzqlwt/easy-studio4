@@ -1,4 +1,4 @@
-const chokidar = window.require('chokidar');
+import chokidar from 'chokidar';
 
 export const addWatcher = function (dir, callback) {
   let watcher = chokidar.watch(dir, {

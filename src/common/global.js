@@ -10,69 +10,91 @@ function fileExists(filePath) {
   }
 }
 
-export const getResourcePath = function () {
+export const getResourcePath = function() {
   let shareObject = remote.getGlobal('shareObject');
   return shareObject.resourcePath;
 };
 
-export const getIconPath = function (name) {
+export const getIconPath = function(name) {
   let path = getResourcePath();
   return join(path, 'assets', 'images', name);
 };
 
-export const getServerPath = function () {
+export const getServerPath = function() {
   let path = getResourcePath();
   return join(path, 'assets', 'kernel', 'EasyStudio.exe');
 };
 
-export const getAddonPath = function () {
+export const getAddonPath = function() {
   let path = getResourcePath();
   return join(path, 'assets', 'Release', 'addon.node');
 };
 
-export const getConfigPath = function () {
+export const getConfigPath = function() {
   const USER_HOME = process.env.HOME || process.env.USERPROFILE;
   return join(USER_HOME, 'AppData', 'Local', 'EasyStudio', 'config.json');
 };
 
-export const getTokenPath = function () {
+export const getTokenPath = function() {
   const USER_HOME = process.env.HOME || process.env.USERPROFILE;
   return join(USER_HOME, 'AppData', 'Local', 'EasyStudio', 'token.json');
 };
 
-export const getConfig = function () {
+export const getCachePath = function() {
+  const USER_HOME = process.env.HOME || process.env.USERPROFILE;
+  return join(USER_HOME, 'AppData', 'Local', 'EasyStudio');
+};
+
+export const getTpPath = function(){
+  let path = getResourcePath();
+  return join(path, 'assets', 'Release', "assets", "TexturePacker.exe");
+}
+
+export const getConfig = function() {
   const file = getConfigPath();
   if (fileExists(file)) {
-    const content = fs.readFileSync(file);
-    return JSON.parse(content);
+    let content = fs.readFileSync(file);
+    return JSON.parse(content == "" ? "{}" : content);
   }
   return {};
 };
 
-export const getCCSPath = function () {
+export const getCCSPath = function() {
   const config = getConfig();
-  return config.CCSPath || 'undefined';
+  return config.CCSPath;
 };
 
-export const setCCSPath = function (value) {
+export const setCCSPath = function(value) {
   const file = getConfigPath();
   let config = {};
   if (fileExists(file)) {
-    config = JSON.parse(fs.readFileSync(file));
+    let content = fs.readFileSync(file);
+    config = JSON.parse(content == "" ? "{}" : content);
   }
   config.CCSPath = value;
   fs.writeFileSync(file, JSON.stringify(config));
 };
 
-export const setToken = function (token) {
+export const setToken = function(token) {
   const file = getTokenPath();
-  fs.writeFileSync(file, token);
+  if (!fs.existsSync(getCachePath())) {
+    fs.mkdirSync(getCachePath());
+  }
+  fs.writeFileSync(file, token, { flag: 'w+' });
 };
 
-export const getToken = function () {
+export const getToken = function() {
   const file = getTokenPath();
   if (fileExists(file)) {
     return JSON.parse(fs.readFileSync(file));
   }
   return null;
 };
+
+export const getPathProperty = function(dataProperty){
+  const property = find(get(dataProperty, 'response', []), (property) => property.name == 'path');
+  if (property) {
+    return property;
+  }
+  return {}
+}

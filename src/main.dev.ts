@@ -27,8 +27,8 @@ export default class AppUpdater {
       dialog.showMessageBox({
         type: 'info',
         title: '更新提示' + info.version,
-        message: '不要关闭~, 后台在下载更新~~~',
-        buttons: ['嗯, 我不会关闭的'],
+        message: '后台偷偷下载中~~~',
+        buttons: ['我是个憨憨','嗯, 我不会关闭的'],
         noLink: true,
         cancelId: 1,
       });

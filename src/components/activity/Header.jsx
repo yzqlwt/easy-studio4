@@ -9,12 +9,13 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import './index.scss';
 import { getAddonPath } from '../../common/global';
 import { EventEmitter } from 'events';
+
 const addon = window.require(getAddonPath());
 const emitter = new EventEmitter();
 
 class Index extends React.Component {
   state = {
-    isShowProgress: false,
+    isShowProgress: false
   };
 
   fetchProperties = (skinId) => {
@@ -30,50 +31,6 @@ class Index extends React.Component {
       this.fetchProperties(skinId);
     }
   }
-  componentDidMount() {
-    const { dispatch } = this.props;
-    emitter.on('visible', (data) => {
-      console.log(data, 'visible');
-      data = JSON.parse(data);
-      dispatch({
-        type: 'visible',
-        title: data.title,
-        status: data.status,
-      });
-    });
-    emitter.on('tiny', (data) => {
-      console.log(data, 'tiny');
-      data = JSON.parse(data);
-      // dispatch({
-      //   type: 'tiny',
-      //   title: data.title,
-      //   status: data.status,
-      //   description: data.description,
-      // });
-      message.info(data.title);
-    });
-    emitter.on('package', (data) => {
-      console.log(data, 'package');
-      data = JSON.parse(data);
-      dispatch({
-        type: 'package',
-        title: data.title,
-        status: data.status,
-        description: data.description,
-      });
-    });
-    emitter.on('upload', (data) => {
-      console.log(data, 'upload');
-      data = JSON.parse(data);
-      dispatch({
-        type: 'upload',
-        title: data.title,
-        status: data.status,
-      });
-    });
-  }
-
-
 
   getSkinData() {
     const { dataSkin, dataTemplateSkinId } = this.props;
@@ -84,6 +41,115 @@ class Index extends React.Component {
       return find(get(targetSkin, 'response', []), (skin) => skin.id == skinId);
     }
     return null;
+  }
+
+  dispatchDownload() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'process',
+      data: {
+        visible: true,
+        download: {
+          title: '下载',
+          status: 'process'
+        },
+        package: {
+          title: '解析',
+          status: 'wait'
+        },
+      }
+    });
+  }
+
+  dispatchParse() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'process',
+      data: {
+        visible: true,
+        download: {
+          title: '下载',
+          status: 'finish'
+        },
+        package: {
+          title: '解析',
+          status: 'process'
+        },
+      }
+    });
+  }
+
+  dispatchTiny() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'process',
+      data: {
+        visible: true,
+        tiny: {
+          title: '压缩图片',
+          status: 'process'
+        },
+        package: {
+          title: '打包',
+          status: 'wait'
+        },
+        upload: {
+          title: '上传',
+          status: 'wait'
+        }
+      }
+    });
+  }
+  dispatchPackage() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'process',
+      data: {
+        visible: true,
+        tiny: {
+          title: '压缩图片',
+          status: 'finish'
+        },
+        package: {
+          title: '打包',
+          status: 'process'
+        },
+        upload: {
+          title: '上传',
+          status: 'wait'
+        }
+      }
+    });
+  }
+  dispatchUpload() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'process',
+      data: {
+        visible: true,
+        tiny: {
+          title: '压缩图片',
+          status: 'finish'
+        },
+        package: {
+          title: '打包',
+          status: 'finish'
+        },
+        upload: {
+          title: '上传',
+          status: 'process'
+        }
+      }
+    });
+  }
+  dispatchCompleted() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'process',
+      data: {
+        visible: false
+      }
+    });
   }
 
   getPath() {
@@ -104,6 +170,15 @@ class Index extends React.Component {
         key="download"
         onClick={() => {
           console.log('click 从后台导入');
+          this.dispatchDownload()
+          setTimeout(()=>{
+            addon.download()
+            this.dispatchParse()
+            setTimeout(()=>{
+              addon.parse()
+              this.dispatchCompleted()
+            }, 100)
+          }, 1000)
         }}
       >
         从后台导入
@@ -112,6 +187,7 @@ class Index extends React.Component {
         key="cache"
         onClick={() => {
           console.log('click 客户端缓存');
+          addon.gotoMangoCache()
         }}
       >
         客户端缓存
@@ -119,7 +195,8 @@ class Index extends React.Component {
       <Menu.Item
         key="history"
         onClick={() => {
-          console.log('click 客户端缓存');
+          console.log('click 历史记录');
+          addon.gotoHistory()
         }}
       >
         历史记录
@@ -139,59 +216,20 @@ class Index extends React.Component {
             key="1"
             type="primary"
             onClick={() => {
-              console.log('click images');
-              const { dispatch } = this.props;
               const { dataTemplateSkinId } = this.props;
               addon.setSkinId(dataTemplateSkinId.skinId);
-              dispatch({
-                type: "visible",
-                title: 'true',
-              })
-              dispatch({
-                type: "tiny",
-                title: '压缩图片',
-                status: "process",
-              })
-
-              setTimeout(() =>{
+              this.dispatchTiny();
+              setTimeout(()=>{
                 addon.tiny()
-                dispatch({
-                  type: "tiny",
-                  title: '压缩图片',
-                  status: "finish",
-                })
-                dispatch({
-                  type: "package",
-                  title: '打包',
-                  status: "process",
-                })
-                setTimeout(() => {
+                this.dispatchPackage();
+                setTimeout(()=>{
                   addon.package()
-                  dispatch({
-                    type: "package",
-                    title: '打包',
-                    status: "finish",
-                  })
-                  dispatch({
-                    type: "upload",
-                    title: '上传',
-                    status: "process",
-                  })
-                  setTimeout(() => {
-                    addon.upload()
-                    dispatch({
-                      type: "upload",
-                      title: '上传',
-                      status: "finish",
-                    })
-                    setTimeout(() => {
-                      dispatch({
-                        type: "visible",
-                        title: 'false',
-                      })
-                    })
-                  })
-                }, 1000)
+                  this.dispatchUpload();
+                  setTimeout(()=>{
+                    addon.upload();
+                    this.dispatchCompleted()
+                  }, 100)
+                }, 100)
               }, 1000)
             }}
           >
@@ -201,17 +239,17 @@ class Index extends React.Component {
             <Button
               style={{
                 border: 'none',
-                padding: 0,
+                padding: 0
               }}
             >
               <EllipsisOutlined
                 style={{
                   fontSize: 20,
-                  verticalAlign: 'top',
+                  verticalAlign: 'top'
                 }}
               />
             </Button>
-          </Dropdown>,
+          </Dropdown>
         ]}
         style={{ margin: 0 }}
       >
@@ -233,7 +271,7 @@ class Index extends React.Component {
 }
 
 Index.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 };
 
 function stateToProps(state) {

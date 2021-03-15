@@ -40,6 +40,15 @@ export const getTokenPath = function() {
   return join(USER_HOME, 'AppData', 'Local', 'EasyStudio', 'token.json');
 };
 
+export const getImageCachePath = function(){
+  const USER_HOME = process.env.HOME || process.env.USERPROFILE;
+  const path =  join(USER_HOME, 'AppData', 'Local', 'EasyStudio', 'tiny');
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path);
+  }
+  return path;
+}
+
 export const getCachePath = function() {
   const USER_HOME = process.env.HOME || process.env.USERPROFILE;
   return join(USER_HOME, 'AppData', 'Local', 'EasyStudio');

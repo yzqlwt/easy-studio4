@@ -9,6 +9,7 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import './index.scss';
 import { getAddonPath } from '../../common/global';
 import { EventEmitter } from 'events';
+import { tiny, tinyAll } from '../../common/tinypng';
 
 const addon = window.require(getAddonPath());
 const emitter = new EventEmitter();
@@ -164,6 +165,9 @@ class Index extends React.Component {
     return '未设置Path';
   }
 
+  createQueue(paths){
+  }
+
   menu = (
     <Menu>
       <Menu.Item
@@ -198,7 +202,19 @@ class Index extends React.Component {
         key="history"
         onClick={() => {
           console.log('click 历史记录');
-          addon.gotoHistory()
+          // addon.gotoHistory()
+
+          (async function runPromiseByQueue(myPromises) {
+            for (let value of myPromises) {
+              await tiny(value);
+              console.log(value, "completed")
+            }
+            console.log("完全完成")
+          })([
+            "C:\\Users\\yzqlwt\\Desktop\\test\\cell_1.png",
+            "C:\\Users\\yzqlwt\\Desktop\\test\\down.png",
+            "C:\\Users\\yzqlwt\\Desktop\\test\\cell_2.png",
+          ])
         }}
       >
         历史记录

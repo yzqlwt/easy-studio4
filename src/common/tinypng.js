@@ -1,5 +1,8 @@
 import fs from 'fs';
-import https from 'https';
+import request from './http';
+import { getImageCachePath } from './global';
+import crypto from 'crypto'
+const { join } = window.require('path');
 
 function getOptions() {
   //生成请求头部
@@ -45,31 +48,29 @@ function getIp() {
   return ip;
 }
 
-export const tinypng = function (path, callback) {
+export const tiny = function (path) {
   const imageData = fs.readFileSync(path);
   if (!imageData) {
-    return false;
+    return path;
   }
-  let req = https.request(getOptions(), (res) => {
-    res.on('data', (buf) => {
-      let obj;
-      try {
-        obj = JSON.parse(buf.toString());
-      } catch (error) {
-        callback(new Error('解析返回值失败'));
-      }
-      if (obj.error) {
-        callback(new Error(obj.error));
-      } else {
-        obj.path = path;
-        callback(obj);
-      }
-    });
-  });
-  console.log(req, '请求');
-  req.write(imageData, 'binary');
-  req.on('error', (err) => {
-    callback(err);
-  });
-  req.end();
-};
+  const cachePath = getImageCachePath();
+  const hash = crypto.createHash('md5');
+  hash.update(imageData, 'utf8');
+  const md5 = hash.digest('hex');
+  const savePath = join(cachePath, md5+".png");
+  if (fs.existsSync(savePath)){
+    return Promise.resolve(path);
+  }else{
+    return request(getOptions(), imageData, savePath);
+  }
+}
+
+export const tinyAll = (paths)=>{
+  paths.reduce(async (previousValue, currentValue) => {
+    await previousValue
+    return tiny(currentValue)
+  }, Promise.resolve())
+}
+
+
+

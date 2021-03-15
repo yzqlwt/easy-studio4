@@ -5,7 +5,7 @@ import {
   Tabs,
 } from 'antd';
 import { isEqual, get, find, each } from 'lodash';
-import { getAddonPath, getTpPath } from '../../../common/global';
+import { getAddonPath, getTpPath, getCCSPath } from '../../../common/global';
 import Grid from './Grid';
 import {
   isFetchLoading,
@@ -42,7 +42,7 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    addon.setCCSPath("C:\\Users\\yzqlwt\\Documents\\WorkSpace\\cocos-ui\\mangomath-ui\\CocosProject.ccs");
+    addon.setCCSPath(getCCSPath());
     addon.setTPPath(getTpPath());
     const { dispatch} = this.props;
     dispatch({

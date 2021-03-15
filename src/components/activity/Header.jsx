@@ -170,6 +170,8 @@ class Index extends React.Component {
         key="download"
         onClick={() => {
           console.log('click 从后台导入');
+          const { dataTemplateSkinId } = this.props;
+          addon.setSkinId(dataTemplateSkinId.skinId);
           this.dispatchDownload()
           setTimeout(()=>{
             addon.download()

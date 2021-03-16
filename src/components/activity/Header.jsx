@@ -1,5 +1,12 @@
 import React from 'react';
-import { Menu, PageHeader, Button, Descriptions, Dropdown, message } from 'antd';
+import {
+  Menu,
+  PageHeader,
+  Button,
+  Descriptions,
+  Dropdown,
+  message,
+} from 'antd';
 import { get, last, find } from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -11,12 +18,13 @@ import { getAddonPath } from '../../common/global';
 import { EventEmitter } from 'events';
 import { tiny, tinyAll } from '../../common/tinypng';
 
+const fpath = window.require('path');
 const addon = window.require(getAddonPath());
-const emitter = new EventEmitter();
 
 class Index extends React.Component {
   state = {
-    isShowProgress: false
+    steps: {},
+    visible: false,
   };
 
   fetchProperties = (skinId) => {
@@ -44,114 +52,6 @@ class Index extends React.Component {
     return null;
   }
 
-  dispatchDownload() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'process',
-      data: {
-        visible: true,
-        download: {
-          title: '下载',
-          status: 'process'
-        },
-        package: {
-          title: '解析',
-          status: 'wait'
-        },
-      }
-    });
-  }
-
-  dispatchParse() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'process',
-      data: {
-        visible: true,
-        download: {
-          title: '下载',
-          status: 'finish'
-        },
-        package: {
-          title: '解析',
-          status: 'process'
-        },
-      }
-    });
-  }
-
-  dispatchTiny() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'process',
-      data: {
-        visible: true,
-        tiny: {
-          title: '压缩图片',
-          status: 'process'
-        },
-        package: {
-          title: '打包',
-          status: 'wait'
-        },
-        upload: {
-          title: '上传',
-          status: 'wait'
-        }
-      }
-    });
-  }
-  dispatchPackage() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'process',
-      data: {
-        visible: true,
-        tiny: {
-          title: '压缩图片',
-          status: 'finish'
-        },
-        package: {
-          title: '打包',
-          status: 'process'
-        },
-        upload: {
-          title: '上传',
-          status: 'wait'
-        }
-      }
-    });
-  }
-  dispatchUpload() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'process',
-      data: {
-        visible: true,
-        tiny: {
-          title: '压缩图片',
-          status: 'finish'
-        },
-        package: {
-          title: '打包',
-          status: 'finish'
-        },
-        upload: {
-          title: '上传',
-          status: 'process'
-        }
-      }
-    });
-  }
-  dispatchCompleted() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'process',
-      data: {
-        visible: false
-      }
-    });
-  }
 
   getPath() {
     const { dataProperty } = this.props;
@@ -165,7 +65,120 @@ class Index extends React.Component {
     return '未设置Path';
   }
 
-  createQueue(paths){
+  async importFromNet(){
+    this.setState({
+      visible: true,
+      steps: {
+        download: {
+          title: "下载",
+          status: 'process',
+        },
+        parse: {
+          title: '解析',
+          status: 'wait',
+        }
+      },
+    });
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 300);
+    });
+    addon.download();
+    this.setState({
+      visible: true,
+      steps: {
+        download: {
+          title: "下载",
+          status: 'finish',
+        },
+        parse: {
+          title: '解析',
+          status: 'process',
+        }
+      },
+    })
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 300);
+    });
+    addon.parse()
+    this.setState({
+      visible: false,
+      steps: {},
+    });
+  }
+
+  async package(paths) {
+    for (let index = 0; index < paths.length; index++) {
+      const path = paths[index];
+      const title = 'Tiny:' + (index + 1) + '/' + paths.length;
+      this.setState({
+        visible: true,
+        steps: {
+          tiny: {
+            title: title,
+            status: 'process',
+            description: fpath.basename(path),
+          },
+          package: {
+            title: '打包',
+            status: 'wait',
+          },
+          upload: {
+            title: '上传',
+            status: 'wait',
+          },
+        },
+      });
+      await tiny(path);
+    }
+    this.setState({
+      visible: true,
+      steps: {
+        tiny: {
+          title: '压缩图片',
+          status: 'finish',
+        },
+        package: {
+          title: '打包',
+          status: 'process',
+        },
+        upload: {
+          title: '上传',
+          status: 'wait',
+        },
+      },
+    });
+    addon.package();
+    this.setState({
+      visible: true,
+      steps: {
+        tiny: {
+          title: '压缩图片',
+          status: 'finish',
+        },
+        package: {
+          title: '打包',
+          status: 'finish',
+        },
+        upload: {
+          title: '上传',
+          status: 'process',
+        },
+      },
+    });
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 300);
+    });
+    addon.upload();
+    this.setState({
+      visible: false,
+      steps: {},
+    });
   }
 
   menu = (
@@ -176,15 +189,7 @@ class Index extends React.Component {
           console.log('click 从后台导入');
           const { dataTemplateSkinId } = this.props;
           addon.setSkinId(dataTemplateSkinId.skinId);
-          this.dispatchDownload()
-          setTimeout(()=>{
-            addon.download()
-            this.dispatchParse()
-            setTimeout(()=>{
-              addon.parse()
-              this.dispatchCompleted()
-            }, 100)
-          }, 1000)
+          this.importFromNet();
         }}
       >
         从后台导入
@@ -193,7 +198,7 @@ class Index extends React.Component {
         key="cache"
         onClick={() => {
           console.log('click 客户端缓存');
-          addon.gotoMangoCache()
+          addon.gotoMangoCache();
         }}
       >
         客户端缓存
@@ -202,19 +207,7 @@ class Index extends React.Component {
         key="history"
         onClick={() => {
           console.log('click 历史记录');
-          // addon.gotoHistory()
-
-          (async function runPromiseByQueue(myPromises) {
-            for (let value of myPromises) {
-              await tiny(value);
-              console.log(value, "completed")
-            }
-            console.log("完全完成")
-          })([
-            "C:\\Users\\yzqlwt\\Desktop\\test\\cell_1.png",
-            "C:\\Users\\yzqlwt\\Desktop\\test\\down.png",
-            "C:\\Users\\yzqlwt\\Desktop\\test\\cell_2.png",
-          ])
+          addon.gotoHistory();
         }}
       >
         历史记录
@@ -236,19 +229,13 @@ class Index extends React.Component {
             onClick={() => {
               const { dataTemplateSkinId } = this.props;
               addon.setSkinId(dataTemplateSkinId.skinId);
-              this.dispatchTiny();
-              setTimeout(()=>{
-                addon.tiny()
-                this.dispatchPackage();
-                setTimeout(()=>{
-                  addon.package()
-                  this.dispatchUpload();
-                  setTimeout(()=>{
-                    addon.upload();
-                    this.dispatchCompleted()
-                  }, 100)
-                }, 100)
-              }, 1000)
+              const filesStr = addon.getNeedTinyFiles();
+              let files = [];
+              if (filesStr.indexOf(',') > 0) {
+                files = filesStr.split(',');
+              }
+              console.log(files);
+              this.package(files);
             }}
           >
             打包&上传
@@ -257,17 +244,17 @@ class Index extends React.Component {
             <Button
               style={{
                 border: 'none',
-                padding: 0
+                padding: 0,
               }}
             >
               <EllipsisOutlined
                 style={{
                   fontSize: 20,
-                  verticalAlign: 'top'
+                  verticalAlign: 'top',
                 }}
               />
             </Button>
-          </Dropdown>
+          </Dropdown>,
         ]}
         style={{ margin: 0 }}
       >
@@ -276,7 +263,10 @@ class Index extends React.Component {
             {this.getPath()}
           </Descriptions.Item>
         </Descriptions>
-        <StepsView></StepsView>
+        <StepsView
+          visible={this.state.visible}
+          steps={this.state.steps}
+        ></StepsView>
       </PageHeader>
     ) : (
       <div></div>
@@ -289,7 +279,7 @@ class Index extends React.Component {
 }
 
 Index.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  dispatch: PropTypes.func.isRequired,
 };
 
 function stateToProps(state) {

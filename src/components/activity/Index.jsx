@@ -9,8 +9,14 @@ import FileView from './fileview/Index';
 import Templates from './Templates';
 import Header from './Header';
 import './index.scss';
+import { getAddonPath, getTpPath, getCCSPath } from '../../common/global';
+const addon = window.require(getAddonPath());
 
 class Index extends React.Component {
+
+  componentDidMount() {
+    addon.setTPPath(getTpPath());
+  }
 
   render() {
     return (

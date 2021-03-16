@@ -42,8 +42,6 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    addon.setCCSPath(getCCSPath());
-    addon.setTPPath(getTpPath());
     const { dispatch} = this.props;
     dispatch({
       type: 'dataPaths',

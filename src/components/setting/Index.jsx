@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import fs from "fs-extra";
-import { Upload, Button, Space } from 'antd';
+import { Upload, Button, Space, message } from 'antd';
 import { getCCSPath, setCCSPath } from '../../common/global';
 import { InboxOutlined } from '@ant-design/icons';
 import './index.scss'
@@ -21,7 +21,7 @@ class Index extends React.Component {
     showUploadList: false,
     onChange: (info)=>{
       const { status } = info.file;
-      setCCSPath(info.file.path);
+      setCCSPath(info.file.originFileObj.path);
       this.setState({
         isChanged: !this.state.isChanged
       })
@@ -41,12 +41,7 @@ class Index extends React.Component {
       ]
     }
   }
-  componentDidMount() {
-    const path = getCCSPath();
-    if (path){
-      this.props.history.push("/activity")
-    }
-  }
+
 
   beforeUpload(file) {
     return file.name.indexOf(".ccs") != -1 ? true : Upload.LIST_IGNORE;
@@ -60,13 +55,18 @@ class Index extends React.Component {
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
-            <p className="ant-upload-text">Click or drag file to this area to set the ccs path</p>
+            <p className="ant-upload-text">Click or drag .ccs file to this area to set the path</p>
             <p className="ant-upload-hint">
               { getCCSPath() }
             </p>
           </Dragger>
           <Button type="primary" block onClick={()=>{
-            this.props.history.push('/activity');
+            const path = getCCSPath();
+            if (path){
+              this.props.history.push("/activity");
+            }else{
+              message.error("未设置ccspath!");
+            }
           }}>
             确定
           </Button>

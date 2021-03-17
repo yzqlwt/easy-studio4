@@ -25,7 +25,7 @@ class Index extends React.Component {
   };
 
   redirectToIndex = () => {
-    this.props.history.push('/setting');
+    this.props.history.push('/activity');
   };
 
   onFinish = (values) => {

@@ -6,6 +6,8 @@ import {
   dialog,
   MenuItemConstructorOptions,
 } from 'electron';
+import { autoUpdater } from 'electron-updater';
+
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -225,6 +227,53 @@ export default class MenuBuilder {
             accelerator: 'Alt+Ctrl+I',
             click: () => {
               this.mainWindow.webContents.toggleDevTools();
+            },
+          },
+        ],
+      },
+      {
+        label: '&Setting',
+        submenu: [
+          {
+            label: '文档',
+            click: () => {
+              this.mainWindow.webContents.toggleDevTools();
+              shell.openExternal("https://shimo.im/docs/Qgwwg36PDd9rdgqx/")
+            },
+          },
+          {
+            label: '设置',
+            click: () => {
+              this.mainWindow.webContents.send("setting")
+            },
+          },
+          {
+            label: '检查更新',
+            click: () => {
+              autoUpdater.checkForUpdates();
+              autoUpdater.on('update-available', (info) => {
+                dialog.showMessageBox({
+                  type: 'info',
+                  title: '更新提示' + info.version,
+                  message: '是否更新到新版本?',
+                  buttons: ['我不', '我得试试'],
+                }).then((index) => {
+                  if (index.response === 1) {
+                    console.log('http://qiniu.yzqlwt.com/'+info.path)
+                    shell.openExternal('http://qiniu.yzqlwt.com/'+info.path);
+                  }
+              });
+              });
+              autoUpdater.on('update-not-available', function (info) {
+                dialog.showMessageBox({
+                  type: 'info',
+                  title: '现在是最新版本',
+                  message: info.version,
+                  buttons: ['我知道了'],
+                  noLink: true,
+                  cancelId: 1,
+                });
+              });
             },
           },
         ],

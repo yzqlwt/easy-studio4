@@ -44,7 +44,7 @@ class Index extends React.Component {
     let list = strList.split(',');
     list = filter(list, (elem) => {
       const extension = fpath.extname(elem);
-      return extension !== '.csd';
+      return extension !== '.csd' && extension !== '.easy' && extension !== '.udf';
     });
     let data = map(list, (elem) => {
       const isFile = fs.lstatSync(path + '/' + elem).isFile();
@@ -62,7 +62,7 @@ class Index extends React.Component {
     const extension = fpath.extname(path);
     const icon = previews[extension];
     if (extension == '.png') {
-      return path;
+      return path+"?"+(new Date().getTime());
     }
     if (!icon) {
       return getIconPath('file.png');

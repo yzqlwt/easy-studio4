@@ -11,11 +11,20 @@ import Header from './Header';
 import './index.scss';
 import { getAddonPath, getTpPath, getCCSPath } from '../../common/global';
 const addon = window.require(getAddonPath());
-
+const electron = window.require('electron');
 class Index extends React.Component {
 
   componentDidMount() {
     addon.setTPPath(getTpPath());
+    let ccsPath = getCCSPath();
+    if (ccsPath) {
+      addon.setCCSPath(getCCSPath());
+    }else{
+      this.props.history.push("/setting")
+    }
+    electron.ipcRenderer.on('setting', (event, message) =>{
+      this.props.history.push("/setting")
+    });
   }
 
   render() {

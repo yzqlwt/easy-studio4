@@ -23,12 +23,12 @@ export default class AppUpdater {
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
     // checkForUpdates();
-    autoUpdater.on('update-available', (info) => {
+    autoUpdater.on('update-downloaded', (info) => {
       dialog.showMessageBox({
         type: 'info',
         title: '更新提示' + info.version,
-        message: '后台偷偷下载中~~~',
-        buttons: ['我是个憨憨','嗯, 我不会关闭的'],
+        message: '后台偷偷下载了新的版本,重新打开即可安装',
+        buttons: ['我知道了'],
         noLink: true,
         cancelId: 1,
       });

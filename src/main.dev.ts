@@ -20,19 +20,20 @@ import MenuBuilder from './menu';
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-    // checkForUpdates();
-    autoUpdater.on('update-downloaded', (info) => {
-      dialog.showMessageBox({
-        type: 'info',
-        title: '更新提示' + info.version,
-        message: '后台偷偷下载了新的版本,重新打开即可安装',
-        buttons: ['我知道了'],
-        noLink: true,
-        cancelId: 1,
+    setTimeout(() => {
+      autoUpdater.logger = log;
+      autoUpdater.checkForUpdatesAndNotify();
+      autoUpdater.on('update-available', (info) => {
+        dialog.showMessageBox({
+          type: 'info',
+          title: '更新提示' + info.version,
+          message: info.releaseNotes,
+          buttons: ['我知道了'],
+          noLink: true,
+          cancelId: 1,
+        });
       });
-    });
+    }, 3000);
   }
 }
 

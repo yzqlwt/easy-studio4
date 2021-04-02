@@ -85,7 +85,7 @@
       "./assets/**"
     ],
     "releaseInfo": {
-      "releaseNotes": "更新:\n\t1.flash生成csd\n现存问题:\n\t1.长时间开启token失效,重新打开即可。\n\t2.压缩图片未检验是否成功"
+      "releaseNotes": "更新:\n\t1.flash生成csd\n\t2.校验图片是否压缩成功\n现存问题:\n\t1.长时间开启token失效,重新打开即可。\n"
     },
     "publish": {
       "provider": "generic",

@@ -107,3 +107,14 @@ export const getPathProperty = function(dataProperty){
   }
   return {}
 }
+
+const init = function(){
+  if (!fs.existsSync(getCachePath())) {
+    fs.mkdirSync(getCachePath());
+  }
+  const flaText = join(getCachePath(), "fla.txt")
+  if (fs.existsSync(flaText)){
+    fs.unlinkSync(flaText);
+  }
+}
+init()

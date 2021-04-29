@@ -27,7 +27,7 @@ export default class AppUpdater {
         dialog.showMessageBox({
           type: 'info',
           title: '更新提示' + info.version,
-          message: info.releaseNotes,
+          message: "后台下载中~~~",
           buttons: ['我知道了'],
           noLink: true,
           cancelId: 1,

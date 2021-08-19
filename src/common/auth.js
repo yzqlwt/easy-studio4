@@ -4,7 +4,7 @@ import { setToken, getToken } from './global';
 // 1000 * 60 * 5;
 const THRESHOLD = 300000;
 // 1000 * 60 * 2;
-const REFRESH_INTERVAL = 120000 / 100;
+const REFRESH_INTERVAL = 120000;
 const MILLISECOND = 1000;
 const Secretary = 810;
 const Editor = 800;
@@ -147,7 +147,7 @@ const auth = {
       }
       return;
     }
-
+    console.log("更新token")
     if (token.expires_in > Date.now() + THRESHOLD) {
       return Promise.resolve();
     }
@@ -218,5 +218,6 @@ function ensureScope() {
 }
 
 ensureScope();
+auth.initFreshTokenTimmer();
 
 export default auth;

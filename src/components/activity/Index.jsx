@@ -8,11 +8,19 @@ import { connect } from 'react-redux';
 import FileView from './fileview/Index';
 import Templates from './Templates';
 import Header from './Header';
+import auth from '../../common/auth';
 import './index.scss';
 import { getAddonPath, getTpPath, getCCSPath } from '../../common/global';
 const addon = window.require(getAddonPath());
 const electron = window.require('electron');
 class Index extends React.Component {
+
+  componentWillUnmount(){
+    const value = auth.isValidToken();
+    if (value!=1) {
+      this.props.history.push('/login');
+    }
+  }
 
   componentDidMount() {
     addon.setTPPath(getTpPath());
